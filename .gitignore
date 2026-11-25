@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+frontend/node_modules/
+frontend/dist/
+data/
+models/*
+!models/README.md
+.env
+*.log
+*.egg-info/
+*.tsbuildinfo
+frontend/.vite/

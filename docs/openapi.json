@@ -1,0 +1,2078 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Pallet Vision",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/config": {
+      "get": {
+        "summary": "Get Config",
+        "operationId": "get_config_api_v1_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppConfig"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Put Config",
+        "operationId": "put_config_api_v1_config_put",
+        "parameters": [
+          {
+            "name": "if-match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "If-Match"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppConfig"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assets": {
+      "post": {
+        "summary": "Upload Asset",
+        "operationId": "upload_asset_api_v1_assets_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_asset_api_v1_assets_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assets/{identifier}": {
+      "get": {
+        "summary": "Get Asset",
+        "operationId": "get_asset_api_v1_assets__identifier__get",
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions": {
+      "post": {
+        "summary": "Create Session",
+        "operationId": "create_session_api_v1_sessions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{identifier}": {
+      "get": {
+        "summary": "Session",
+        "operationId": "session_api_v1_sessions__identifier__get",
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update Session",
+        "operationId": "update_session_api_v1_sessions__identifier__patch",
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identifier"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Session",
+        "operationId": "delete_session_api_v1_sessions__identifier__delete",
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{identifier}/reset": {
+      "post": {
+        "summary": "Reset Session",
+        "operationId": "reset_session_api_v1_sessions__identifier__reset_post",
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{identifier}/frames": {
+      "post": {
+        "summary": "Pin",
+        "operationId": "pin_api_v1_sessions__identifier__frames_post",
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identifier"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inspections": {
+      "post": {
+        "summary": "Inspect",
+        "operationId": "inspect_api_v1_inspections_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InspectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inspections/{identifier}": {
+      "get": {
+        "summary": "Get Inspection",
+        "operationId": "get_inspection_api_v1_inspections__identifier__get",
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/references": {
+      "post": {
+        "summary": "Capture Reference",
+        "operationId": "capture_reference_api_v1_references_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReferenceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/references/{identifier}": {
+      "get": {
+        "summary": "Get Reference",
+        "operationId": "get_reference_api_v1_references__identifier__get",
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/verifications": {
+      "post": {
+        "summary": "Verify",
+        "operationId": "verify_api_v1_verifications_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerificationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/verifications/{identifier}": {
+      "get": {
+        "summary": "Get Verification",
+        "operationId": "get_verification_api_v1_verifications__identifier__get",
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/calibrations": {
+      "post": {
+        "summary": "Calibration",
+        "operationId": "calibration_api_v1_calibrations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalibrationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/calibrations/{identifier}": {
+      "get": {
+        "summary": "Get Calibration",
+        "operationId": "get_calibration_api_v1_calibrations__identifier__get",
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/captures": {
+      "post": {
+        "summary": "Capture",
+        "operationId": "capture_api_v1_captures_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaptureRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/jobs/{identifier}": {
+      "get": {
+        "summary": "Job",
+        "operationId": "job_api_v1_jobs__identifier__get",
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/history": {
+      "get": {
+        "summary": "History",
+        "operationId": "history_api_v1_history_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "verdict",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "PASS",
+                    "FAIL",
+                    "INCOMPLETE"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Verdict"
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Source"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/history/{identifier}": {
+      "get": {
+        "summary": "History Item",
+        "operationId": "history_item_api_v1_history__identifier__get",
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/media/{identifier}": {
+      "get": {
+        "summary": "Media",
+        "operationId": "media_api_v1_media__identifier__get",
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{identifier}/stream.mjpg": {
+      "get": {
+        "summary": "Mjpeg",
+        "operationId": "mjpeg_api_v1_sessions__identifier__stream_mjpg_get",
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identifier"
+            }
+          },
+          {
+            "name": "view",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "rgb",
+                "depth",
+                "annotated"
+              ],
+              "type": "string",
+              "default": "rgb",
+              "title": "View"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AlignmentConfig": {
+        "properties": {
+          "target_angle_deg": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Target Angle Deg",
+            "default": 0
+          },
+          "position_tolerance_px": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Position Tolerance Px",
+            "default": 20
+          },
+          "position_tolerance_mm": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Position Tolerance Mm",
+            "default": 20
+          },
+          "rotation_tolerance_deg": {
+            "type": "number",
+            "maximum": 90.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Rotation Tolerance Deg",
+            "default": 5
+          },
+          "canny_low": {
+            "type": "integer",
+            "maximum": 255.0,
+            "minimum": 0.0,
+            "title": "Canny Low",
+            "default": 40
+          },
+          "canny_high": {
+            "type": "integer",
+            "maximum": 255.0,
+            "minimum": 0.0,
+            "title": "Canny High",
+            "default": 120
+          },
+          "contour_min_area_fraction": {
+            "type": "number",
+            "maximum": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Contour Min Area Fraction",
+            "default": 0.08
+          },
+          "morphology_kernel": {
+            "type": "integer",
+            "maximum": 31.0,
+            "minimum": 1.0,
+            "title": "Morphology Kernel",
+            "default": 5
+          },
+          "height_band_mm": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Height Band Mm",
+            "default": 100
+          },
+          "min_rectangularity": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Min Rectangularity",
+            "default": 0.55
+          },
+          "boundary_margin_px": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Boundary Margin Px",
+            "default": 2
+          },
+          "square_ambiguity_ratio": {
+            "type": "number",
+            "minimum": 1.0,
+            "title": "Square Ambiguity Ratio",
+            "default": 1.08
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "AlignmentConfig"
+      },
+      "AppConfig": {
+        "properties": {
+          "schema_version": {
+            "type": "integer",
+            "const": 1,
+            "title": "Schema Version",
+            "default": 1
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision",
+            "default": 1
+          },
+          "roi": {
+            "$ref": "#/components/schemas/ROI"
+          },
+          "calibration": {
+            "$ref": "#/components/schemas/CalibrationConfig"
+          },
+          "classifier": {
+            "$ref": "#/components/schemas/ClassifierConfig"
+          },
+          "alignment": {
+            "$ref": "#/components/schemas/AlignmentConfig"
+          },
+          "detector": {
+            "$ref": "#/components/schemas/DetectorConfig"
+          },
+          "matching": {
+            "$ref": "#/components/schemas/MatchingConfig"
+          },
+          "runtime": {
+            "$ref": "#/components/schemas/RuntimeConfig"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "AppConfig"
+      },
+      "Body_upload_asset_api_v1_assets_post": {
+        "properties": {
+          "rgb": {
+            "anyOf": [
+              {
+                "type": "string",
+                "contentMediaType": "application/octet-stream"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rgb"
+          },
+          "depth": {
+            "anyOf": [
+              {
+                "type": "string",
+                "contentMediaType": "application/octet-stream"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Depth"
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "type": "string",
+                "contentMediaType": "application/octet-stream"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata"
+          },
+          "bag": {
+            "anyOf": [
+              {
+                "type": "string",
+                "contentMediaType": "application/octet-stream"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bag"
+          }
+        },
+        "type": "object",
+        "title": "Body_upload_asset_api_v1_assets_post"
+      },
+      "CalibrationConfig": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "intrinsics": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Intrinsics"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "floor_plane": {
+            "anyOf": [
+              {
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array",
+                "maxItems": 4,
+                "minItems": 4
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Floor Plane"
+          },
+          "floor_distance_mm": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Floor Distance Mm"
+          },
+          "perpendicular_camera": {
+            "type": "boolean",
+            "title": "Perpendicular Camera",
+            "default": false
+          },
+          "camera_serial": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Camera Serial"
+          },
+          "pallet_height_mm": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Pallet Height Mm",
+            "default": 150
+          },
+          "plane_max_residual_mm": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Plane Max Residual Mm",
+            "default": 10
+          },
+          "plane_min_points": {
+            "type": "integer",
+            "minimum": 3.0,
+            "title": "Plane Min Points",
+            "default": 100
+          },
+          "plane_max_points": {
+            "type": "integer",
+            "minimum": 100.0,
+            "title": "Plane Max Points",
+            "default": 10000
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "CalibrationConfig"
+      },
+      "CalibrationRequest": {
+        "properties": {
+          "frame_id": {
+            "type": "string",
+            "title": "Frame Id"
+          },
+          "roi": {
+            "$ref": "#/components/schemas/ROI"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "frame_id",
+          "roi"
+        ],
+        "title": "CalibrationRequest"
+      },
+      "CaptureRequest": {
+        "properties": {
+          "frame_id": {
+            "type": "string",
+            "title": "Frame Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "frame_id"
+        ],
+        "title": "CaptureRequest"
+      },
+      "ClassifierConfig": {
+        "properties": {
+          "wood": {
+            "items": {
+              "$ref": "#/components/schemas/HSVRange"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Wood"
+          },
+          "plastic": {
+            "items": {
+              "$ref": "#/components/schemas/HSVRange"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Plastic"
+          },
+          "minimum_coverage": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Minimum Coverage",
+            "default": 0.3
+          },
+          "minimum_margin": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Minimum Margin",
+            "default": 0.12
+          },
+          "minimum_pixels": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Minimum Pixels",
+            "default": 200
+          },
+          "histogram_bins": {
+            "type": "integer",
+            "maximum": 180.0,
+            "minimum": 2.0,
+            "title": "Histogram Bins",
+            "default": 18
+          },
+          "histogram_weight": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Histogram Weight",
+            "default": 0.25
+          },
+          "wood_histogram": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wood Histogram"
+          },
+          "plastic_histogram": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plastic Histogram"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ClassifierConfig"
+      },
+      "DetectorConfig": {
+        "properties": {
+          "backend": {
+            "type": "string",
+            "enum": [
+              "fastsam",
+              "yolo"
+            ],
+            "title": "Backend",
+            "default": "fastsam"
+          },
+          "model_path": {
+            "type": "string",
+            "title": "Model Path",
+            "default": "FastSAM-s.pt"
+          },
+          "device": {
+            "type": "string",
+            "title": "Device",
+            "default": "cpu"
+          },
+          "confidence": {
+            "type": "number",
+            "maximum": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Confidence",
+            "default": 0.4
+          },
+          "iou": {
+            "type": "number",
+            "maximum": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Iou",
+            "default": 0.7
+          },
+          "image_size": {
+            "type": "integer",
+            "maximum": 2048.0,
+            "minimum": 128.0,
+            "title": "Image Size",
+            "default": 1024
+          },
+          "min_area_px": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Min Area Px",
+            "default": 300
+          },
+          "max_area_px": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Max Area Px",
+            "default": 400000
+          },
+          "max_aspect_ratio": {
+            "type": "number",
+            "minimum": 1.0,
+            "title": "Max Aspect Ratio",
+            "default": 8
+          },
+          "min_circularity": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Min Circularity",
+            "default": 0.08
+          },
+          "standing_circularity": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Standing Circularity",
+            "default": 0.65
+          },
+          "standing_max_aspect": {
+            "type": "number",
+            "minimum": 1.0,
+            "title": "Standing Max Aspect",
+            "default": 1.35
+          },
+          "lying_min_aspect": {
+            "type": "number",
+            "minimum": 1.0,
+            "title": "Lying Min Aspect",
+            "default": 1.6
+          },
+          "duplicate_overlap": {
+            "type": "number",
+            "maximum": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Duplicate Overlap",
+            "default": 0.85
+          },
+          "standing_class": {
+            "type": "string",
+            "title": "Standing Class",
+            "default": "roll_standing"
+          },
+          "lying_class": {
+            "type": "string",
+            "title": "Lying Class",
+            "default": "roll_lying"
+          },
+          "depth_valid_fraction": {
+            "type": "number",
+            "maximum": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Depth Valid Fraction",
+            "default": 0.25
+          },
+          "minimum_depth_mm": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Minimum Depth Mm",
+            "default": 100
+          },
+          "maximum_depth_mm": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Maximum Depth Mm",
+            "default": 10000
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "DetectorConfig"
+      },
+      "HSVRange": {
+        "properties": {
+          "low": {
+            "prefixItems": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "type": "array",
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Low"
+          },
+          "high": {
+            "prefixItems": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "type": "array",
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "High"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "low",
+          "high"
+        ],
+        "title": "HSVRange"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "InspectionRequest": {
+        "properties": {
+          "frame_id": {
+            "type": "string",
+            "title": "Frame Id"
+          },
+          "config_revision": {
+            "type": "integer",
+            "title": "Config Revision"
+          },
+          "session_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "frame_id",
+          "config_revision"
+        ],
+        "title": "InspectionRequest"
+      },
+      "Intrinsics": {
+        "properties": {
+          "width": {
+            "type": "integer",
+            "maximum": 16384.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Width"
+          },
+          "height": {
+            "type": "integer",
+            "maximum": 16384.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Height"
+          },
+          "fx": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Fx"
+          },
+          "fy": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Fy"
+          },
+          "ppx": {
+            "type": "number",
+            "title": "Ppx"
+          },
+          "ppy": {
+            "type": "number",
+            "title": "Ppy"
+          },
+          "distortion": {
+            "type": "string",
+            "enum": [
+              "none",
+              "brown_conrady",
+              "inverse_brown_conrady"
+            ],
+            "title": "Distortion",
+            "default": "none"
+          },
+          "coeffs": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "maxItems": 5,
+            "minItems": 5,
+            "title": "Coeffs"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "width",
+          "height",
+          "fx",
+          "fy",
+          "ppx",
+          "ppy"
+        ],
+        "title": "Intrinsics"
+      },
+      "MatchingConfig": {
+        "properties": {
+          "position_tolerance_px": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Position Tolerance Px",
+            "default": 25
+          },
+          "position_tolerance_mm": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Position Tolerance Mm",
+            "default": 25
+          },
+          "size_tolerance_percent": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Size Tolerance Percent",
+            "default": 15
+          },
+          "check_orientation": {
+            "type": "boolean",
+            "title": "Check Orientation",
+            "default": true
+          },
+          "position_weight": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Position Weight",
+            "default": 1
+          },
+          "size_weight": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Size Weight",
+            "default": 0.5
+          },
+          "orientation_weight": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Orientation Weight",
+            "default": 1
+          },
+          "candidate_gate_multiplier": {
+            "type": "number",
+            "exclusiveMinimum": 1.0,
+            "title": "Candidate Gate Multiplier",
+            "default": 5
+          },
+          "unmatched_cost": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Unmatched Cost",
+            "default": 4
+          },
+          "minimum_reference_count": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Minimum Reference Count",
+            "default": 1
+          },
+          "canonical_pallet_width_px": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Canonical Pallet Width Px",
+            "default": 1000
+          },
+          "pallet_aspect_tolerance_percent": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Pallet Aspect Tolerance Percent",
+            "default": 15
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "MatchingConfig"
+      },
+      "PinRequest": {
+        "properties": {
+          "frame_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frame Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "PinRequest"
+      },
+      "ROI": {
+        "properties": {
+          "points": {
+            "items": {
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array",
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "type": "array",
+            "maxItems": 32,
+            "minItems": 3,
+            "title": "Points"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ROI"
+      },
+      "ReferenceRequest": {
+        "properties": {
+          "inspection_id": {
+            "type": "string",
+            "title": "Inspection Id"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 120,
+            "title": "Label",
+            "default": "Reference pallet"
+          },
+          "session_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "inspection_id"
+        ],
+        "title": "ReferenceRequest"
+      },
+      "RuntimeConfig": {
+        "properties": {
+          "camera_width": {
+            "type": "integer",
+            "maximum": 1920.0,
+            "minimum": 320.0,
+            "title": "Camera Width",
+            "default": 640
+          },
+          "camera_height": {
+            "type": "integer",
+            "maximum": 1080.0,
+            "minimum": 240.0,
+            "title": "Camera Height",
+            "default": 480
+          },
+          "camera_fps": {
+            "type": "integer",
+            "maximum": 90.0,
+            "minimum": 1.0,
+            "title": "Camera Fps",
+            "default": 30
+          },
+          "frame_timeout_ms": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "minimum": 100.0,
+            "title": "Frame Timeout Ms",
+            "default": 3000
+          },
+          "stream_fps": {
+            "type": "integer",
+            "maximum": 30.0,
+            "minimum": 1.0,
+            "title": "Stream Fps",
+            "default": 10
+          },
+          "jpeg_quality": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 20.0,
+            "title": "Jpeg Quality",
+            "default": 85
+          },
+          "continuous_interval_seconds": {
+            "type": "number",
+            "maximum": 3600.0,
+            "minimum": 0.2,
+            "title": "Continuous Interval Seconds",
+            "default": 2
+          },
+          "max_upload_mb": {
+            "type": "integer",
+            "maximum": 8192.0,
+            "minimum": 1.0,
+            "title": "Max Upload Mb",
+            "default": 512
+          },
+          "max_image_pixels": {
+            "type": "integer",
+            "maximum": 64000000.0,
+            "minimum": 1000.0,
+            "title": "Max Image Pixels",
+            "default": 16000000
+          },
+          "max_pending_jobs": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Max Pending Jobs",
+            "default": 8
+          },
+          "max_pinned_frames": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 2.0,
+            "title": "Max Pinned Frames",
+            "default": 16
+          },
+          "depth_colormap_max_mm": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Depth Colormap Max Mm",
+            "default": 4000
+          },
+          "minimum_free_disk_mb": {
+            "type": "integer",
+            "minimum": 100.0,
+            "title": "Minimum Free Disk Mb",
+            "default": 1024
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "RuntimeConfig"
+      },
+      "SessionCreate": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "live",
+              "offline"
+            ],
+            "title": "Mode"
+          },
+          "asset_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Asset Id"
+          },
+          "camera_serial": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Camera Serial"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "mode"
+        ],
+        "title": "SessionCreate"
+      },
+      "SessionUpdate": {
+        "properties": {
+          "playback": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "playing",
+                  "paused"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Playback"
+          },
+          "seek_seconds": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seek Seconds"
+          },
+          "reference_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Id"
+          },
+          "continuous": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Continuous"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "SessionUpdate"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VerificationRequest": {
+        "properties": {
+          "reference_id": {
+            "type": "string",
+            "title": "Reference Id"
+          },
+          "inspection_id": {
+            "type": "string",
+            "title": "Inspection Id"
+          },
+          "session_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "reference_id",
+          "inspection_id"
+        ],
+        "title": "VerificationRequest"
+      }
+    }
+  }
+}

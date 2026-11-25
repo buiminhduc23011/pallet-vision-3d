@@ -1,0 +1,763 @@
+{
+  "$defs": {
+    "AlignmentConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "target_angle_deg": {
+          "default": 0,
+          "maximum": 180,
+          "minimum": -180,
+          "title": "Target Angle Deg",
+          "type": "number"
+        },
+        "position_tolerance_px": {
+          "default": 20,
+          "exclusiveMinimum": 0,
+          "title": "Position Tolerance Px",
+          "type": "number"
+        },
+        "position_tolerance_mm": {
+          "default": 20,
+          "exclusiveMinimum": 0,
+          "title": "Position Tolerance Mm",
+          "type": "number"
+        },
+        "rotation_tolerance_deg": {
+          "default": 5,
+          "exclusiveMinimum": 0,
+          "maximum": 90,
+          "title": "Rotation Tolerance Deg",
+          "type": "number"
+        },
+        "canny_low": {
+          "default": 40,
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Canny Low",
+          "type": "integer"
+        },
+        "canny_high": {
+          "default": 120,
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Canny High",
+          "type": "integer"
+        },
+        "contour_min_area_fraction": {
+          "default": 0.08,
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Contour Min Area Fraction",
+          "type": "number"
+        },
+        "morphology_kernel": {
+          "default": 5,
+          "maximum": 31,
+          "minimum": 1,
+          "title": "Morphology Kernel",
+          "type": "integer"
+        },
+        "height_band_mm": {
+          "default": 100,
+          "exclusiveMinimum": 0,
+          "title": "Height Band Mm",
+          "type": "number"
+        },
+        "min_rectangularity": {
+          "default": 0.55,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Min Rectangularity",
+          "type": "number"
+        },
+        "boundary_margin_px": {
+          "default": 2,
+          "minimum": 0,
+          "title": "Boundary Margin Px",
+          "type": "number"
+        },
+        "square_ambiguity_ratio": {
+          "default": 1.08,
+          "minimum": 1,
+          "title": "Square Ambiguity Ratio",
+          "type": "number"
+        }
+      },
+      "title": "AlignmentConfig",
+      "type": "object"
+    },
+    "CalibrationConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "intrinsics": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Intrinsics"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "floor_plane": {
+          "anyOf": [
+            {
+              "maxItems": 4,
+              "minItems": 4,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Floor Plane"
+        },
+        "floor_distance_mm": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Floor Distance Mm"
+        },
+        "perpendicular_camera": {
+          "default": false,
+          "title": "Perpendicular Camera",
+          "type": "boolean"
+        },
+        "camera_serial": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Camera Serial"
+        },
+        "pallet_height_mm": {
+          "default": 150,
+          "minimum": 0,
+          "title": "Pallet Height Mm",
+          "type": "number"
+        },
+        "plane_max_residual_mm": {
+          "default": 10,
+          "exclusiveMinimum": 0,
+          "title": "Plane Max Residual Mm",
+          "type": "number"
+        },
+        "plane_min_points": {
+          "default": 100,
+          "minimum": 3,
+          "title": "Plane Min Points",
+          "type": "integer"
+        },
+        "plane_max_points": {
+          "default": 10000,
+          "minimum": 100,
+          "title": "Plane Max Points",
+          "type": "integer"
+        }
+      },
+      "title": "CalibrationConfig",
+      "type": "object"
+    },
+    "ClassifierConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "wood": {
+          "items": {
+            "$ref": "#/$defs/HSVRange"
+          },
+          "minItems": 1,
+          "title": "Wood",
+          "type": "array"
+        },
+        "plastic": {
+          "items": {
+            "$ref": "#/$defs/HSVRange"
+          },
+          "minItems": 1,
+          "title": "Plastic",
+          "type": "array"
+        },
+        "minimum_coverage": {
+          "default": 0.3,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Minimum Coverage",
+          "type": "number"
+        },
+        "minimum_margin": {
+          "default": 0.12,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Minimum Margin",
+          "type": "number"
+        },
+        "minimum_pixels": {
+          "default": 200,
+          "minimum": 1,
+          "title": "Minimum Pixels",
+          "type": "integer"
+        },
+        "histogram_bins": {
+          "default": 18,
+          "maximum": 180,
+          "minimum": 2,
+          "title": "Histogram Bins",
+          "type": "integer"
+        },
+        "histogram_weight": {
+          "default": 0.25,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Histogram Weight",
+          "type": "number"
+        },
+        "wood_histogram": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Wood Histogram"
+        },
+        "plastic_histogram": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Plastic Histogram"
+        }
+      },
+      "title": "ClassifierConfig",
+      "type": "object"
+    },
+    "DetectorConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "backend": {
+          "default": "fastsam",
+          "enum": [
+            "fastsam",
+            "yolo"
+          ],
+          "title": "Backend",
+          "type": "string"
+        },
+        "model_path": {
+          "default": "FastSAM-s.pt",
+          "title": "Model Path",
+          "type": "string"
+        },
+        "device": {
+          "default": "cpu",
+          "title": "Device",
+          "type": "string"
+        },
+        "confidence": {
+          "default": 0.4,
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "iou": {
+          "default": 0.7,
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Iou",
+          "type": "number"
+        },
+        "image_size": {
+          "default": 1024,
+          "maximum": 2048,
+          "minimum": 128,
+          "title": "Image Size",
+          "type": "integer"
+        },
+        "min_area_px": {
+          "default": 300,
+          "minimum": 1,
+          "title": "Min Area Px",
+          "type": "integer"
+        },
+        "max_area_px": {
+          "default": 400000,
+          "minimum": 1,
+          "title": "Max Area Px",
+          "type": "integer"
+        },
+        "max_aspect_ratio": {
+          "default": 8,
+          "minimum": 1,
+          "title": "Max Aspect Ratio",
+          "type": "number"
+        },
+        "min_circularity": {
+          "default": 0.08,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Min Circularity",
+          "type": "number"
+        },
+        "standing_circularity": {
+          "default": 0.65,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Standing Circularity",
+          "type": "number"
+        },
+        "standing_max_aspect": {
+          "default": 1.35,
+          "minimum": 1,
+          "title": "Standing Max Aspect",
+          "type": "number"
+        },
+        "lying_min_aspect": {
+          "default": 1.6,
+          "minimum": 1,
+          "title": "Lying Min Aspect",
+          "type": "number"
+        },
+        "duplicate_overlap": {
+          "default": 0.85,
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Duplicate Overlap",
+          "type": "number"
+        },
+        "standing_class": {
+          "default": "roll_standing",
+          "title": "Standing Class",
+          "type": "string"
+        },
+        "lying_class": {
+          "default": "roll_lying",
+          "title": "Lying Class",
+          "type": "string"
+        },
+        "depth_valid_fraction": {
+          "default": 0.25,
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Depth Valid Fraction",
+          "type": "number"
+        },
+        "minimum_depth_mm": {
+          "default": 100,
+          "exclusiveMinimum": 0,
+          "title": "Minimum Depth Mm",
+          "type": "number"
+        },
+        "maximum_depth_mm": {
+          "default": 10000,
+          "exclusiveMinimum": 0,
+          "title": "Maximum Depth Mm",
+          "type": "number"
+        }
+      },
+      "title": "DetectorConfig",
+      "type": "object"
+    },
+    "HSVRange": {
+      "additionalProperties": false,
+      "properties": {
+        "low": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "integer"
+            }
+          ],
+          "title": "Low",
+          "type": "array"
+        },
+        "high": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "integer"
+            }
+          ],
+          "title": "High",
+          "type": "array"
+        }
+      },
+      "required": [
+        "low",
+        "high"
+      ],
+      "title": "HSVRange",
+      "type": "object"
+    },
+    "Intrinsics": {
+      "additionalProperties": false,
+      "properties": {
+        "width": {
+          "exclusiveMinimum": 0,
+          "maximum": 16384,
+          "title": "Width",
+          "type": "integer"
+        },
+        "height": {
+          "exclusiveMinimum": 0,
+          "maximum": 16384,
+          "title": "Height",
+          "type": "integer"
+        },
+        "fx": {
+          "exclusiveMinimum": 0,
+          "title": "Fx",
+          "type": "number"
+        },
+        "fy": {
+          "exclusiveMinimum": 0,
+          "title": "Fy",
+          "type": "number"
+        },
+        "ppx": {
+          "title": "Ppx",
+          "type": "number"
+        },
+        "ppy": {
+          "title": "Ppy",
+          "type": "number"
+        },
+        "distortion": {
+          "default": "none",
+          "enum": [
+            "none",
+            "brown_conrady",
+            "inverse_brown_conrady"
+          ],
+          "title": "Distortion",
+          "type": "string"
+        },
+        "coeffs": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 5,
+          "minItems": 5,
+          "title": "Coeffs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "width",
+        "height",
+        "fx",
+        "fy",
+        "ppx",
+        "ppy"
+      ],
+      "title": "Intrinsics",
+      "type": "object"
+    },
+    "MatchingConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "position_tolerance_px": {
+          "default": 25,
+          "exclusiveMinimum": 0,
+          "title": "Position Tolerance Px",
+          "type": "number"
+        },
+        "position_tolerance_mm": {
+          "default": 25,
+          "exclusiveMinimum": 0,
+          "title": "Position Tolerance Mm",
+          "type": "number"
+        },
+        "size_tolerance_percent": {
+          "default": 15,
+          "exclusiveMinimum": 0,
+          "title": "Size Tolerance Percent",
+          "type": "number"
+        },
+        "check_orientation": {
+          "default": true,
+          "title": "Check Orientation",
+          "type": "boolean"
+        },
+        "position_weight": {
+          "default": 1,
+          "exclusiveMinimum": 0,
+          "title": "Position Weight",
+          "type": "number"
+        },
+        "size_weight": {
+          "default": 0.5,
+          "minimum": 0,
+          "title": "Size Weight",
+          "type": "number"
+        },
+        "orientation_weight": {
+          "default": 1,
+          "minimum": 0,
+          "title": "Orientation Weight",
+          "type": "number"
+        },
+        "candidate_gate_multiplier": {
+          "default": 5,
+          "exclusiveMinimum": 1,
+          "title": "Candidate Gate Multiplier",
+          "type": "number"
+        },
+        "unmatched_cost": {
+          "default": 4,
+          "exclusiveMinimum": 0,
+          "title": "Unmatched Cost",
+          "type": "number"
+        },
+        "minimum_reference_count": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Minimum Reference Count",
+          "type": "integer"
+        },
+        "canonical_pallet_width_px": {
+          "default": 1000,
+          "exclusiveMinimum": 0,
+          "title": "Canonical Pallet Width Px",
+          "type": "number"
+        },
+        "pallet_aspect_tolerance_percent": {
+          "default": 15,
+          "exclusiveMinimum": 0,
+          "title": "Pallet Aspect Tolerance Percent",
+          "type": "number"
+        }
+      },
+      "title": "MatchingConfig",
+      "type": "object"
+    },
+    "ROI": {
+      "additionalProperties": false,
+      "properties": {
+        "points": {
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "maxItems": 32,
+          "minItems": 3,
+          "title": "Points",
+          "type": "array"
+        }
+      },
+      "title": "ROI",
+      "type": "object"
+    },
+    "RuntimeConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "camera_width": {
+          "default": 640,
+          "maximum": 1920,
+          "minimum": 320,
+          "title": "Camera Width",
+          "type": "integer"
+        },
+        "camera_height": {
+          "default": 480,
+          "maximum": 1080,
+          "minimum": 240,
+          "title": "Camera Height",
+          "type": "integer"
+        },
+        "camera_fps": {
+          "default": 30,
+          "maximum": 90,
+          "minimum": 1,
+          "title": "Camera Fps",
+          "type": "integer"
+        },
+        "frame_timeout_ms": {
+          "default": 3000,
+          "maximum": 10000,
+          "minimum": 100,
+          "title": "Frame Timeout Ms",
+          "type": "integer"
+        },
+        "stream_fps": {
+          "default": 10,
+          "maximum": 30,
+          "minimum": 1,
+          "title": "Stream Fps",
+          "type": "integer"
+        },
+        "jpeg_quality": {
+          "default": 85,
+          "maximum": 100,
+          "minimum": 20,
+          "title": "Jpeg Quality",
+          "type": "integer"
+        },
+        "continuous_interval_seconds": {
+          "default": 2,
+          "maximum": 3600,
+          "minimum": 0.2,
+          "title": "Continuous Interval Seconds",
+          "type": "number"
+        },
+        "max_upload_mb": {
+          "default": 512,
+          "maximum": 8192,
+          "minimum": 1,
+          "title": "Max Upload Mb",
+          "type": "integer"
+        },
+        "max_image_pixels": {
+          "default": 16000000,
+          "maximum": 64000000,
+          "minimum": 1000,
+          "title": "Max Image Pixels",
+          "type": "integer"
+        },
+        "max_pending_jobs": {
+          "default": 8,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Max Pending Jobs",
+          "type": "integer"
+        },
+        "max_pinned_frames": {
+          "default": 16,
+          "maximum": 100,
+          "minimum": 2,
+          "title": "Max Pinned Frames",
+          "type": "integer"
+        },
+        "depth_colormap_max_mm": {
+          "default": 4000,
+          "exclusiveMinimum": 0,
+          "title": "Depth Colormap Max Mm",
+          "type": "number"
+        },
+        "minimum_free_disk_mb": {
+          "default": 1024,
+          "minimum": 100,
+          "title": "Minimum Free Disk Mb",
+          "type": "integer"
+        }
+      },
+      "title": "RuntimeConfig",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "revision": {
+      "default": 1,
+      "minimum": 1,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "roi": {
+      "$ref": "#/$defs/ROI"
+    },
+    "calibration": {
+      "$ref": "#/$defs/CalibrationConfig"
+    },
+    "classifier": {
+      "$ref": "#/$defs/ClassifierConfig"
+    },
+    "alignment": {
+      "$ref": "#/$defs/AlignmentConfig"
+    },
+    "detector": {
+      "$ref": "#/$defs/DetectorConfig"
+    },
+    "matching": {
+      "$ref": "#/$defs/MatchingConfig"
+    },
+    "runtime": {
+      "$ref": "#/$defs/RuntimeConfig"
+    }
+  },
+  "title": "AppConfig",
+  "type": "object"
+}

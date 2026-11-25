@@ -1,0 +1,5 @@
+{
+  "schema_version": 1,
+  "revision": 1,
+  "detector": {"backend": "fastsam", "model_path": "FastSAM-s.pt", "device": "cpu"}
+}

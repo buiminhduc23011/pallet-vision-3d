@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pallet-vision"
+version = "0.1.0"
+description = "Real-input RGB-D pallet inspection workstation"
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi>=0.115,<1", "uvicorn[standard]>=0.34,<1",
+  "python-multipart>=0.0.20,<1", "pydantic>=2.10,<3",
+  "numpy>=2.1,<3", "opencv-python>=4.10,<5", "scipy>=1.14,<2", "pillow>=11,<13",
+]
+
+[project.optional-dependencies]
+vision = ["ultralytics>=8.3,<9"]
+camera = ["pyrealsense2>=2.55,<3"]
+dev = ["pytest>=8,<10", "httpx>=0.28,<1", "ruff>=0.11,<1"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
