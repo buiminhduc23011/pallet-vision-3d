@@ -11,6 +11,7 @@ from app.vision.classifier import classify
 from app.vision.depth_fusion import describe_roll
 from app.vision.geometry import roi_mask
 from app.vision.roll_detector import FastSAMDetector, YOLOSegDetector
+from app.vision.teaching import following_mask
 
 
 class VisionPipeline:
@@ -21,15 +22,25 @@ class VisionPipeline:
         self.detector = None
         self.detector_key = None
 
-    def inspect(self, frame: FrameBundle, config: AppConfig):
+    def inspect(self, frame: FrameBundle, config: AppConfig, origin=None):
         warnings, masks = [], []
-        pallet, alignment = detect_pallet(frame, config)
+        pallet, alignment = detect_pallet(frame, config, origin)
         zone = roi_mask(frame.rgb.shape, config.roi)
         detection_region = zone.copy()
         if pallet:
             detection_region[:] = 0
             cv2.fillPoly(detection_region, [np.asarray(pallet["polygon"], np.int32)], 255)
             detection_region &= zone
+        material_region = detection_region.copy()
+        if pallet and config.teaching:
+            if config.teaching.roll_roi:
+                detection_region &= following_mask(
+                    frame.rgb.shape, config.teaching.roll_roi, config.teaching, pallet
+                )
+            if config.teaching.material_roi:
+                material_region &= following_mask(
+                    frame.rgb.shape, config.teaching.material_roi, config.teaching, pallet
+                )
         detector_state = "READY"
         fingerprint = None
         detections = []
@@ -44,7 +55,6 @@ class VisionPipeline:
         except DomainError as exc:
             detector_state = "UNAVAILABLE"
             warnings.append(exc.public())
-        material_region = detection_region.copy()
         for detection in detections:
             material_region[detection.mask > 0] = 0
         classification = classify(frame.rgb, material_region, config.classifier)
@@ -80,6 +90,7 @@ class VisionPipeline:
             complete = False
         return {
             "frame_id": frame.id,
+            "confirmed_origin": origin,
             "source": frame.source,
             "captured_at": frame.captured_at,
             "processed_at": utcnow(),

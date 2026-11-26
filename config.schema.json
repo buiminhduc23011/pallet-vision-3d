@@ -720,6 +720,95 @@
       },
       "title": "RuntimeConfig",
       "type": "object"
+    },
+    "TeachingConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "source_frame_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Source Frame Id",
+          "type": "string"
+        },
+        "image_width": {
+          "exclusiveMinimum": 1,
+          "title": "Image Width",
+          "type": "integer"
+        },
+        "image_height": {
+          "exclusiveMinimum": 1,
+          "title": "Image Height",
+          "type": "integer"
+        },
+        "camera_serial": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Camera Serial"
+        },
+        "intrinsics": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Intrinsics"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "target": {
+          "$ref": "#/$defs/ROI"
+        },
+        "material_roi": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ROI"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "roll_roi": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ROI"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "require_origin_confirmation": {
+          "default": true,
+          "title": "Require Origin Confirmation",
+          "type": "boolean"
+        },
+        "size_tolerance_percent": {
+          "default": 20,
+          "exclusiveMinimum": 0,
+          "maximum": 100,
+          "title": "Size Tolerance Percent",
+          "type": "number"
+        }
+      },
+      "required": [
+        "source_frame_id",
+        "image_width",
+        "image_height",
+        "target"
+      ],
+      "title": "TeachingConfig",
+      "type": "object"
     }
   },
   "additionalProperties": false,
@@ -738,6 +827,17 @@
     },
     "roi": {
       "$ref": "#/$defs/ROI"
+    },
+    "teaching": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TeachingConfig"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     },
     "calibration": {
       "$ref": "#/$defs/CalibrationConfig"

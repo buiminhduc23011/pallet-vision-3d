@@ -11,10 +11,26 @@ export type Intrinsics = {
   coeffs: number[];
 };
 export type HSVRange = { low: [number, number, number]; high: [number, number, number] };
+export type Teaching = {
+  source_frame_id: string;
+  image_width: number;
+  image_height: number;
+  camera_serial: string | null;
+  intrinsics: Intrinsics | null;
+  target: ROI;
+  material_roi: ROI | null;
+  roll_roi: ROI | null;
+  require_origin_confirmation: boolean;
+  size_tolerance_percent: number;
+};
+export type RecipeSummary = { id: string; name: string; created_at: string };
+export type RecipePage = { items: RecipeSummary[]; next_cursor: string | null };
+export type Recipe = RecipeSummary & { config: Config };
 export type Config = {
   schema_version: 1;
   revision: number;
   roi: ROI;
+  teaching: Teaching | null;
   calibration: {
     id: string | null;
     intrinsics: Intrinsics | null;
@@ -163,6 +179,7 @@ export type Inspection = {
   classification: { material: string; confidence: number };
   alignment: {
     status: string;
+    acceptance_polygon?: Point[] | null;
     dx: number | null;
     dy: number | null;
     unit: string;

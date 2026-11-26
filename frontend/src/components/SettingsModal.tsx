@@ -43,7 +43,7 @@ export default function SettingsModal({ config, busy, floorROI, onClose, onSave,
     if (dirty.current && !busy) void onSave(draft);
     onClose();
   }
-  function number<K extends keyof Config>(
+  function number<K extends Exclude<keyof Config, 'teaching'>>(
     section: K,
     key: keyof Config[K],
     label: string,

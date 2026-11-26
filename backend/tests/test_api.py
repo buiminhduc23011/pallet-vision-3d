@@ -29,6 +29,64 @@ def test_starts_offline_without_model(client):
     assert session["mode"] == "offline"
 
 
+def test_recipes_require_a_real_taught_frame_and_paginate(client):
+    config = client.get("/api/v1/config").json()
+    result = client.post("/api/v1/recipes", json={"name": "Pallet A", "config": config})
+    assert result.status_code == 422
+    assert result.json()["error"]["code"] == "TEACHING_REQUIRED"
+    result = client.get("/api/v1/recipes?limit=10")
+    assert result.json() == {"items": [], "next_cursor": None}
+
+
+def test_recipe_read_pagination_is_stable(client):
+    for i in range(3):
+        client.app.state.engine.db.save(
+            "recipe",
+            str(i),
+            {
+                "id": str(i),
+                "name": f"Setup {i}",
+                "created_at": "2026-11-26T00:00:00Z",
+                "config": client.get("/api/v1/config").json(),
+            },
+        )
+    first = client.get("/api/v1/recipes?limit=2").json()
+    assert [r["id"] for r in first["items"]] == ["2", "1"]
+    second = client.get(f"/api/v1/recipes?limit=2&cursor={first['next_cursor']}").json()
+    assert [r["id"] for r in second["items"]] == ["0"]
+    assert second["next_cursor"] is None
+    assert client.get("/api/v1/recipes/1").json()["name"] == "Setup 1"
+    assert client.get("/api/v1/recipes?limit=101").status_code == 422
+
+
+def test_teaching_and_material_sample_cannot_invent_a_frame(client):
+    config = client.get("/api/v1/config").json()
+    assert client.post("/api/v1/teachings", json={"frame_id": "missing", "config": config}).status_code == 404
+    assert (
+        client.post(
+            "/api/v1/material-samples", json={"frame_id": "missing", "roi": config["roi"]}
+        ).status_code
+        == 404
+    )
+    config["teaching"] = {
+        "source_frame_id": "missing",
+        "image_width": 640,
+        "image_height": 480,
+        "target": config["roi"],
+    }
+    result = client.put("/api/v1/config", json=config, headers={"If-Match": '"1"'})
+    assert result.status_code == 404
+    assert client.get("/api/v1/config").json()["revision"] == 1
+
+
+def test_origin_coordinates_are_bounded_before_job_submission(client):
+    result = client.post(
+        "/api/v1/inspections",
+        json={"frame_id": "missing", "config_revision": 1, "confirmed_origin": [-0.1, 0.5]},
+    )
+    assert result.status_code == 422
+
+
 def test_cannot_capture_without_real_input(client):
     session = client.post("/api/v1/sessions", json={"mode": "offline"}).json()
     result = client.post(f"/api/v1/sessions/{session['id']}/frames", json={})

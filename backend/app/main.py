@@ -14,6 +14,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.staticfiles import StaticFiles
 
 from app.api.routes import allowed_origin, router
+from app.api.teaching import router as teaching_router
 from app.api.body_limit import BodyLimitMiddleware
 from app.errors import DomainError
 from app.services.engine import Engine
@@ -162,6 +163,7 @@ def create_app(data_dir: Path | None = None, config_path: Path | None = None, mo
     # Outermost guard also bounds body reads performed by idempotency middleware.
     app.add_middleware(BodyLimitMiddleware)
     app.include_router(router)
+    app.include_router(teaching_router)
     frontend = ROOT / "frontend" / "dist"
     if frontend.exists():
         app.mount("/", StaticFiles(directory=frontend, html=True), name="hmi")

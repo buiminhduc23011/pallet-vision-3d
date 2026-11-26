@@ -12,6 +12,7 @@ type Props = {
   onUpload: () => void;
   onROI: (roi: ROI) => void;
   onFloorROI: (roi: ROI) => void;
+  onOrigin: (point: Point) => void;
 };
 const points = (p: Point[]) => p.map((v) => v.join(',')).join(' ');
 
@@ -24,10 +25,11 @@ export default function InspectionViewport({
   onUpload,
   onROI,
   onFloorROI,
+  onOrigin,
 }: Props) {
   const [view, setView] = useState('RGB');
   const [layers, setLayers] = useState(['ROI zone', 'Pallet', 'Rolls', 'Transfer diff']);
-  const [drawing, setDrawing] = useState<'roi' | 'floor' | null>(null);
+  const [drawing, setDrawing] = useState<'roi' | 'floor' | 'origin' | null>(null);
   const [draft, setDraft] = useState<Point[] | null>(null);
   const start = useRef<Point | null>(null);
   const container = useRef<HTMLDivElement>(null);
@@ -61,7 +63,11 @@ export default function InspectionViewport({
     setDraft(null);
     setDrawing(null);
   }
-  const scalePoints = (p: Point[]) => p.map(([x, y]) => [x * width, y * height] as Point);
+  const scalePoints = (p: Point[]) => p.map(([x, y]) => [x * (width - 1), y * (height - 1)] as Point);
+  const taught =
+    config?.teaching?.image_width === width && config?.teaching?.image_height === height
+      ? config.teaching
+      : null;
   return (
     <section className="viewport-panel" ref={container} aria-label="Inspection viewport">
       <div className="panel-heading">
@@ -102,8 +108,18 @@ export default function InspectionViewport({
             icon={<Crosshair size={14} />}
             onClick={() => setDrawing(drawing === 'roi' ? null : 'roi')}
           >
-            Draw ROI
+            Search ROI
           </Button>
+          {taught && (
+            <Button
+              size="small"
+              type={drawing === 'origin' ? 'primary' : 'default'}
+              disabled={busy || streaming || !inspection?.pallet}
+              onClick={() => setDrawing(drawing === 'origin' ? null : 'origin')}
+            >
+              Confirm origin
+            </Button>
+          )}
           <Button
             size="small"
             type={drawing === 'floor' ? 'primary' : 'text'}
@@ -114,6 +130,24 @@ export default function InspectionViewport({
           </Button>
         </div>
       </div>
+      {drawing === 'origin' && (
+        <div className="origin-prompt">
+          Select the same physical origin corner taught as O, not the corner nearest the screen origin.{' '}
+          {inspection?.pallet?.polygon.map((p, i) => (
+            <Button
+              key={i}
+              size="small"
+              disabled={busy || streaming}
+              onClick={() => {
+                onOrigin([p[0] / (width - 1), p[1] / (height - 1)]);
+                setDrawing(null);
+              }}
+            >
+              Corner {i + 1}
+            </Button>
+          ))}
+        </div>
+      )}
       <div className={`viewport ${drawing ? 'is-drawing' : ''}`}>
         <div className="viewport-topline">
           <span>
@@ -134,7 +168,14 @@ export default function InspectionViewport({
               className="overlay"
               aria-label="Inspection overlays and ROI drawing surface"
               onPointerDown={(e) => {
-                if (!drawing) return;
+                if (!drawing || busy) return;
+                if (drawing === 'origin') {
+                  if (!streaming) {
+                    onOrigin(coordinate(e));
+                    setDrawing(null);
+                  }
+                  return;
+                }
                 e.currentTarget.setPointerCapture(e.pointerId);
                 start.current = coordinate(e);
               }}
@@ -155,6 +196,50 @@ export default function InspectionViewport({
                 setDraft(null);
               }}
             >
+              {taught && (
+                <g stroke="#ffcd4a" fill="none" strokeWidth={2}>
+                  {overlayInspection?.alignment.acceptance_polygon && (
+                    <polygon
+                      points={points(overlayInspection.alignment.acceptance_polygon)}
+                      fill="#ffcd4a"
+                      fillOpacity={0.12}
+                      strokeDasharray="4 3"
+                    />
+                  )}
+                  <polygon points={points(scalePoints(taught.target.points))} strokeDasharray="7 5" />
+                  <polyline
+                    points={points(
+                      scalePoints([
+                        taught.target.points[1],
+                        taught.target.points[0],
+                        taught.target.points[3],
+                      ]),
+                    )}
+                  />
+                  {taught.target.points.map(([x, y], i) => (
+                    <text
+                      key={i}
+                      x={x * (width - 1) + 6}
+                      y={y * (height - 1) - 6}
+                      fill="#ffcd4a"
+                      stroke="#17232c"
+                      paintOrder="stroke"
+                      fontSize={Math.max(width / 65, 12)}
+                    >
+                      {['O', '+X', '2', '+Y'][i]}
+                    </text>
+                  ))}
+                </g>
+              )}
+              {drawing === 'origin' &&
+                overlayInspection?.pallet?.polygon.map(([x, y], i) => (
+                  <g key={i}>
+                    <circle cx={x} cy={y} r={8} fill="#ffcd4a" />
+                    <text x={x + 10} y={y + 18} fill="white" fontSize={18}>
+                      {i + 1}
+                    </text>
+                  </g>
+                ))}
               {layers.includes('ROI zone') && config && (
                 <polygon points={points(scalePoints(config.roi.points))} className="roi-polygon" />
               )}

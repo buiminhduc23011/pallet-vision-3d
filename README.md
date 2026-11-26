@@ -121,3 +121,12 @@ the Python vision engine or access the workstation's USB camera.
 
 See [design](docs/DESIGN.md), [WebSocket protocol](docs/websocket-protocol.md),
 [security review](docs/SECURITY_REVIEW.md) and [release status](docs/RELEASE_STATUS.md).
+
+## Teach a pallet
+
+Open **Teach setup / Recipes** after loading a real input. Mark four clockwise
+corners (O, +X, opposite, +Y), draw the search/material/roll regions, calibrate the
+floor for RGB-D and set tolerances. Save a named recipe. Confirm the physical O
+corner on each pinned inspection before capturing the reference or verifying a
+transfer. See the [Teach Setup guide](docs/teaching.md) for the full workflow,
+coordinate conventions, recipe behavior and symmetric-pallet limitations.

@@ -245,6 +245,13 @@ class Engine:
             updates["status"] = "ready"
         if updates.get("continuous") and not (updates.get("reference_id") or self.session["reference_id"]):
             raise DomainError("REFERENCE_REQUIRED", "Capture a reference before continuous verification", 409)
+        teaching = self.config.get().teaching
+        if updates.get("continuous") and teaching and teaching.require_origin_confirmation:
+            raise DomainError(
+                "MANUAL_ORIGIN_REQUIRED",
+                "This setup requires origin confirmation on each pinned frame; use manual inspections",
+                409,
+            )
         with self.lock:
             self.session.update(updates)
         self.emit("session.state", self.session_state())
@@ -325,10 +332,10 @@ class Engine:
         self.worker.submit(run)
         return {"job_id": identifier, "status": "queued", "status_url": f"/api/v1/jobs/{identifier}"}
 
-    def inspect(self, frame_id, config: AppConfig, session_id=None):
+    def inspect(self, frame_id, config: AppConfig, session_id=None, origin=None):
         self.require_storage()
         frame = self.store.load_frame(frame_id)
-        result, masks = self.pipeline.inspect(frame, config)
+        result, masks = self.pipeline.inspect(frame, config, origin)
         identifier = uuid4().hex
         result["id"] = identifier
         folder = self.root / "inspections" / identifier
@@ -353,6 +360,10 @@ class Engine:
 
     def reference(self, inspection_id, label, session_id=None):
         inspection = self.db.get("inspection", inspection_id)
+        if inspection["config_snapshot"].get("teaching") and inspection["alignment"]["status"] != "OK":
+            raise DomainError(
+                "REFERENCE_NOT_ALIGNED", "A taught reference must pass alignment, size and origin checks", 409
+            )
         if inspection["state"] != "COMPLETE" or not inspection["rolls"]:
             raise DomainError(
                 "REFERENCE_INCOMPLETE",
@@ -396,6 +407,10 @@ class Engine:
         if current["state"] != "COMPLETE":
             result["verdict"] = "INCOMPLETE"
             result["reasons"].append("CURRENT_INSPECTION_INCOMPLETE")
+        if config.teaching:
+            from app.vision.teaching import enforce_alignment
+
+            enforce_alignment(result, current["alignment"])
         if reference["pallet"] and current["pallet"]:
             a = reference["pallet"]["width_px"] / reference["pallet"]["height_px"]
             b = current["pallet"]["width_px"] / current["pallet"]["height_px"]
@@ -423,7 +438,9 @@ class Engine:
                     * pallet["width_px"]
                     / config.matching.canonical_pallet_width_px
                 )
-                missing["expected_box"] = (local @ np.asarray(pallet["basis"]) + pallet["center"]).tolist()
+                missing["expected_box"] = (
+                    local @ np.asarray(pallet["basis"]) + pallet.get("local_origin", pallet["center"])
+                ).tolist()
             elif missing.get("local_box") is not None and pallet and pallet["metric_transform"]:
                 transform = pallet["metric_transform"]
                 points = (
@@ -485,8 +502,9 @@ class Engine:
             new_reference = None
             if reference_id:
                 old = self.db.get("reference", reference_id)
-                inspected = self.inspect(old["frame_id"], config)
-                if inspected["state"] == "COMPLETE" and inspected["rolls"]:
+                inspected = self.inspect(old["frame_id"], config, origin=old.get("confirmed_origin"))
+                aligned = not config.teaching or inspected["alignment"]["status"] == "OK"
+                if inspected["state"] == "COMPLETE" and inspected["rolls"] and aligned:
                     new_reference = self.reference(inspected["id"], old["label"], session_id)
                 else:
                     with self.lock:

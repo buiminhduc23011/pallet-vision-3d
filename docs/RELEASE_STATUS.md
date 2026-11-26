@@ -7,6 +7,9 @@
 - SQLite history, immutable images/masks and failure records.
 - Light industrial HMI, settings/HSV controls, ROI, offline upload, live controls.
 - Core software checks and local browser startup/settings checks.
+- Teach Setup: four corners, origin/axes, separate search/material/roll regions,
+  material histograms, floor calibration controls and tolerance preview.
+- Persistent recipe library, camera-profile checks and frame-bound origin confirmation.
 
 ## Not validated / not bundled
 
@@ -15,7 +18,9 @@
 - No trained roll model, labeled acceptance dataset or production error budget.
 - No user authentication, network-hosted deployment, Windows service or installer.
 - No automatic capture retention/deletion; disk reserve stops new writes.
-- No physical pose anchor for 180-degree/square-pallet ambiguity.
+- No automatic physical-marker recognition. Taught direction uses explicit manual
+  origin confirmation; axis-only mode cannot certify 180-degree reversal.
+- Teach-on-real-image and recipe save/reload with real captures remain unvalidated.
 
 ## Deployment
 

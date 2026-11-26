@@ -31,6 +31,18 @@ model weights and a physical camera. No replacement images are generated.
    sustained production-like soak. Configure the continuous interval accordingly.
 9. Test storage exhaustion, backups/restores, power loss and operator recovery.
 10. Confirm model/license suitability and sign off the measured false-pass rate.
+11. Teach four corners on a correct real pallet; verify origin, axes and the
+    center acceptance window. Move the search ROI without moving the taught target.
+12. Save/reload two recipes with different dimensions, regions and calibration;
+    confirm old references are invalidated when the teaching changes.
+13. Translate and rotate the pallet; confirm material/roll patches follow its pose
+    and roll local coordinates start at the physical origin. Verify a 180-degree
+    reversal is NG after selecting the correct physical O, even with symmetric rolls.
+14. Omit origin confirmation and try a wrong-resolution/camera input: neither may
+    produce a complete taught inspection. Verify continuous mode rejects manual-origin
+    recipes. Test square pallets and clipped/occluded contours with real evidence.
+15. Sample wood/plastic on exposed patches under actual lighting. Validate histogram
+    effects together with HSV thresholds; no automatic model training is implied.
 
 This release must not be used as an unattended safety interlock. A software build
 or unit-test result is not evidence of vision accuracy.

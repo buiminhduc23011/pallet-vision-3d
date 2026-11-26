@@ -67,4 +67,4 @@ def canonical_rect(contour):
 
 
 def local_pixels(points, pallet):
-    return (np.asarray(points) - pallet["center"]) @ np.asarray(pallet["basis"]).T
+    return (np.asarray(points) - pallet.get("local_origin", pallet["center"])) @ np.asarray(pallet["basis"]).T

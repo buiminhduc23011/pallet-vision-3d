@@ -41,3 +41,24 @@ backup/retention policy, validated model licensing and real-capture acceptance.
 
 The implementation pass following this review addresses findings 1–3. Hardware,
 model internals, operating-system permissions and reverse proxies are out of scope.
+
+## Teach Setup review — 2026-11-26
+
+Scope: teaching/material-sample/recipe routes and configuration activation. The
+review pass was read-only before subsequent implementation verification.
+
+- **Informational / local-only / repudiation:** `backend/app/api/teaching.py:95`
+  stores immutable recipe IDs/times but has no operator identity. A same-host
+  process can create or activate recipes. This remains the documented trusted
+  workstation boundary, not multi-user authorization. Operator attribution and a
+  reviewed authenticated gateway are required before network exposure.
+- **Non-findings:** recipe listing at `backend/app/api/teaching.py:112` uses bound
+  SQL parameters and caps page size at 100. Frame IDs are resolved through stored
+  resource records, not caller-controlled filesystem paths. Recipe labels render
+  as React text. No URLs, shell arguments or model uploads were introduced.
+- Existing Host/Origin checks and mutation serialization in `backend/app/main.py`
+  cover the new routes; request body and image-size limits remain in force.
+  Material sampling is bounded to one stored image and 180 histogram bins.
+- Out of scope: workstation-owner tampering, camera firmware, model internals,
+  hardware accuracy and public/LAN deployment. No new high/critical finding was
+  identified within the local-only threat model.

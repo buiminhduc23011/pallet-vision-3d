@@ -31,6 +31,7 @@ import type {
   HistoryPage,
   Inspection,
   JobTicket,
+  Point,
   Reference,
   ROI,
   Session,
@@ -41,6 +42,7 @@ import InspectionViewport from './components/InspectionViewport';
 import HistoryTable from './components/HistoryTable';
 const SettingsModal = lazy(() => import('./components/SettingsModal'));
 const UploadModal = lazy(() => import('./components/UploadModal'));
+const TeachModal = lazy(() => import('./components/TeachModal'));
 
 const format = (value: number | null | undefined, suffix = '') =>
   value == null ? '—' : `${value > 0 ? '+' : ''}${value.toFixed(1)}${suffix}`;
@@ -61,6 +63,8 @@ function Workstation() {
   const working = useRef(false);
   const [error, setError] = useState('');
   const [settings, setSettings] = useState(false);
+  const [teachOpen, setTeachOpen] = useState(false);
+  const [teachFrame, setTeachFrame] = useState<Frame | null>(null);
   const [uploadRole, setUploadRole] = useState<string | null>(null);
   const [filename, setFilename] = useState('No file selected');
   const [floorROI, setFloorROI] = useState<ROI | null>(null);
@@ -239,6 +243,7 @@ function Workstation() {
     });
   }
   async function applyConfig(next: Config) {
+    let success = false;
     await run(async () => {
       const saved = await api<{ config: Config; reprocessing_job_ids: string[] }>('/config', {
         method: 'PUT',
@@ -249,6 +254,7 @@ function Workstation() {
       configRef.current = saved.config;
       setInspection(null);
       setVerification(null);
+      setReference(null);
       for (const jobId of saved.reprocessing_job_ids)
         await awaitJob({ job_id: jobId, status_url: `/api/v1/jobs/${jobId}` });
       if (sessionRef.current) {
@@ -263,6 +269,23 @@ function Workstation() {
         setReference(ref);
         setVerification(checked);
       }
+      success = true;
+    });
+    return success;
+  }
+  async function confirmOrigin(origin: Point) {
+    if (!inspection || !config || !session) return;
+    await run(async () => {
+      const result = await awaitJob<Inspection>(
+        await post<JobTicket>('/inspections', {
+          frame_id: inspection.frame_id,
+          config_revision: config.revision,
+          session_id: session.id,
+          confirmed_origin: origin,
+        }),
+      );
+      setInspection(result);
+      setVerification(null);
     });
   }
   async function calibrate() {
@@ -529,6 +552,32 @@ function Workstation() {
               <span>Switch to “Pinned inspection” in the viewport to draw a floor sample.</span>
             </div>
           )}
+          <div className="teach-entry">
+            <div>
+              <strong>PALLET SETUP</strong>
+              <span>
+                {config?.teaching
+                  ? config.teaching.require_origin_confirmation
+                    ? 'Taught datum active · confirm origin on each pinned inspection'
+                    : 'Taught datum active · axis-only / 180° reversal not verified'
+                  : 'No taught datum · exploratory inspection only'}
+              </span>
+            </div>
+            <Button
+              disabled={disabled || !config}
+              icon={<Crosshair size={16} />}
+              onClick={() =>
+                void run(async () => {
+                  let pinned: Frame | null = null;
+                  if (session?.frame) pinned = await post<Frame>(`/sessions/${session.id}/frames`, {});
+                  setTeachFrame(pinned);
+                  setTeachOpen(true);
+                })
+              }
+            >
+              Teach setup / Recipes
+            </Button>
+          </div>
           <div className="inspection-layout">
             <div className="inspection-main">
               <InspectionViewport
@@ -538,6 +587,7 @@ function Workstation() {
                 config={config}
                 busy={disabled}
                 onUpload={() => setUploadRole('Single image')}
+                onOrigin={confirmOrigin}
                 onROI={(roi) => {
                   if (config) void applyConfig({ ...config, roi });
                 }}
@@ -813,13 +863,23 @@ function Workstation() {
         </main>
       </div>
       <Suspense fallback={null}>
+        {teachOpen && config && (
+          <TeachModal
+            frame={teachFrame}
+            config={config}
+            onClose={() => setTeachOpen(false)}
+            onApply={applyConfig}
+          />
+        )}
         {settings && config && (
           <SettingsModal
             config={config}
             busy={disabled}
             floorROI={floorROI}
             onClose={() => setSettings(false)}
-            onSave={applyConfig}
+            onSave={async (next) => {
+              await applyConfig(next);
+            }}
             onCalibrate={calibrate}
           />
         )}

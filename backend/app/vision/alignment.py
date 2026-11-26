@@ -5,10 +5,14 @@ from app.schemas.config import AppConfig
 from app.sources.base import FrameBundle
 from app.vision.calibration import floor_plane
 from app.vision.geometry import canonical_rect, deproject, roi_mask
+from app.vision.teaching import acceptance_polygon, orient_pallet, target_geometry, validate_teaching_frame
 
 
-def detect_pallet(frame: FrameBundle, config: AppConfig) -> tuple[dict | None, dict]:
+def detect_pallet(frame: FrameBundle, config: AppConfig, origin=None) -> tuple[dict | None, dict]:
     rgb, cfg = frame.rgb, config.alignment
+    teaching = config.teaching
+    validate_teaching_frame(teaching, frame)
+    taught = target_geometry(teaching) if teaching else None
     zone = roi_mask(rgb.shape, config.roi)
     plane = floor_plane(config, frame)
     method = "rgb_contour"
@@ -43,8 +47,22 @@ def detect_pallet(frame: FrameBundle, config: AppConfig) -> tuple[dict | None, d
             "reasons": ["PALLET_NOT_FOUND"],
             "method": method,
         }
-    contour = max(contours, key=cv2.contourArea)
+    if taught:
+
+        def score(c):
+            box = orient_pallet(canonical_rect(c), taught)
+            return sum(abs(np.log(max(box[k], 1) / taught[k])) for k in ("width_px", "height_px"))
+
+        contour = min(contours, key=score)
+    else:
+        contour = max(contours, key=cv2.contourArea)
     pallet = canonical_rect(contour)
+    if taught:
+        pixel_origin = (
+            np.asarray(origin) * [rgb.shape[1] - 1, rgb.shape[0] - 1] if origin is not None else None
+        )
+        pallet = orient_pallet(pallet, taught, pixel_origin)
+        pallet["local_origin"] = pallet["polygon"][0]
     rectangularity = cv2.contourArea(contour) / max(pallet["width_px"] * pallet["height_px"], 1)
     if rectangularity < cfg.min_rectangularity:
         return None, {
@@ -59,7 +77,10 @@ def detect_pallet(frame: FrameBundle, config: AppConfig) -> tuple[dict | None, d
     target_contour = cv2.findContours(zone, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0][0]
     moments = cv2.moments(target_contour)
     target = np.array([moments["m10"] / moments["m00"], moments["m01"] / moments["m00"]])
-    target_theta = np.deg2rad(cfg.target_angle_deg)
+    target_angle = taught["angle_deg"] if taught else cfg.target_angle_deg
+    if taught:
+        target = np.asarray(taught["center"])
+    target_theta = np.deg2rad(target_angle)
     target_basis = np.array(
         [[np.cos(target_theta), np.sin(target_theta)], [-np.sin(target_theta), np.cos(target_theta)]]
     )
@@ -75,9 +96,10 @@ def detect_pallet(frame: FrameBundle, config: AppConfig) -> tuple[dict | None, d
                 target,
                 np.asarray(pallet["center"]) + np.asarray(pallet["basis"])[0],
                 target + target_basis[0],
+                pallet.get("local_origin", pallet["center"]),
             ]
         )
-        rays = deproject(sample, np.ones(4), intr)
+        rays = deproject(sample, np.ones(5), intr)
         denominator = rays @ plane[:3]
         if np.all(np.abs(denominator) > 1e-6):
             points = rays * ((config.calibration.pallet_height_mm - plane[3]) / denominator)[:, None]
@@ -93,11 +115,19 @@ def detect_pallet(frame: FrameBundle, config: AppConfig) -> tuple[dict | None, d
                 target_y = np.cross(target_x, plane[:3])
                 target_y /= np.linalg.norm(target_y)
                 delta = (points[0] - points[1]) @ np.array([target_x, target_y]).T
-                pallet["metric_transform"] = {"origin": points[0].tolist(), "basis": basis.tolist()}
+                pallet["metric_transform"] = {"origin": points[4].tolist(), "basis": basis.tolist()}
                 unit = "mm"
-    angle = (pallet["angle_deg"] - cfg.target_angle_deg + 90) % 180 - 90
+    period = 360 if taught and origin is not None else 180
+    angle = (pallet["angle_deg"] - target_angle + period / 2) % period - period / 2
     tolerance = cfg.position_tolerance_mm if unit == "mm" else cfg.position_tolerance_px
     reasons = []
+    origin_missing = bool(teaching and teaching.require_origin_confirmation and origin is None)
+    if origin_missing:
+        reasons.append("ORIGIN_CONFIRMATION_REQUIRED")
+    if taught:
+        for key in ("width_px", "height_px"):
+            if abs(pallet[key] / taught[key] - 1) * 100 > teaching.size_tolerance_percent:
+                reasons.append(f"PALLET_SIZE_MISMATCH_{key.upper()}")
     for axis, value in zip(("X", "Y"), delta):
         if abs(value) > tolerance:
             reasons.append(f"Misaligned {axis}: {value:+.1f}{unit}")
@@ -112,7 +142,12 @@ def detect_pallet(frame: FrameBundle, config: AppConfig) -> tuple[dict | None, d
         cv2.pointPolygonTest(target_contour, tuple(map(float, p[0])), True) <= cfg.boundary_margin_px
         for p in contour
     )
-    ambiguous = pallet["width_px"] / max(pallet["height_px"], 1) < cfg.square_ambiguity_ratio
+    ambiguous = (
+        max(pallet["width_px"], pallet["height_px"]) / max(min(pallet["width_px"], pallet["height_px"]), 1)
+        < cfg.square_ambiguity_ratio
+    )
+    if taught and origin is not None:
+        ambiguous = False
     pallet["geometry_quality"] = {
         "rectangularity": rectangularity,
         "method": method,
@@ -124,7 +159,12 @@ def detect_pallet(frame: FrameBundle, config: AppConfig) -> tuple[dict | None, d
     if ambiguous:
         reasons.append("PALLET_AXIS_AMBIGUOUS")
     return pallet, {
-        "status": "INCOMPLETE" if clipped or ambiguous else ("NG" if reasons else "OK"),
+        "status": "INCOMPLETE" if clipped or ambiguous or origin_missing else ("NG" if reasons else "OK"),
+        "target": taught,
+        "acceptance_polygon": acceptance_polygon(
+            config, plane, frame.metadata.intrinsics if frame.metadata else None
+        ),
+        "origin_confirmed": bool(taught and origin is not None),
         "dx": float(delta[0]),
         "dy": float(delta[1]),
         "unit": unit,

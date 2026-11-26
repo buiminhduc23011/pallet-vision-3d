@@ -3,7 +3,7 @@ import json
 import shutil
 import struct
 from pathlib import Path
-from typing import Literal
+from typing import Annotated, Literal
 from uuid import uuid4
 
 import cv2
@@ -51,6 +51,9 @@ class InspectionRequest(StrictModel):
     frame_id: str
     config_revision: int
     session_id: str | None = None
+    confirmed_origin: (
+        tuple[Annotated[float, Field(ge=0, le=1)], Annotated[float, Field(ge=0, le=1)]] | None
+    ) = None
 
 
 class ReferenceRequest(StrictModel):
@@ -99,7 +102,18 @@ def put_config(value: AppConfig, request: Request, response: Response, if_match:
         raise DomainError("UNTRUSTED_MODEL_PATH", "Model path must stay inside models/")
     if engine.pending:
         raise DomainError("PROCESSING_BUSY", "Wait for current processing before changing settings", 409)
+    if value.teaching:
+        from app.api.teaching import validate_setup
+
+        validate_setup(engine, value)
+    changed_teaching = value.teaching != engine.config.get().teaching
     saved = engine.config.put(value, revision)
+    if changed_teaching:
+        with engine.lock:
+            if engine.session:
+                engine.session.update(
+                    reference_id=None, inspection_id=None, verification_id=None, continuous=False
+                )
     response.headers["ETag"] = f'"{saved.revision}"'
     jobs = engine.reprocess()
     engine.emit("config.applied", {"revision": saved.revision, "job_ids": jobs})
@@ -238,7 +252,9 @@ def inspect(value: InspectionRequest, request: Request):
     if value.config_revision != config.revision:
         raise DomainError("STALE_CONFIG", "Reload the current configuration", 409)
     engine.db.get("frame", value.frame_id)
-    return engine.submit("inspection", lambda: engine.inspect(value.frame_id, config, value.session_id))
+    return engine.submit(
+        "inspection", lambda: engine.inspect(value.frame_id, config, value.session_id, value.confirmed_origin)
+    )
 
 
 @router.get("/inspections/{identifier}")

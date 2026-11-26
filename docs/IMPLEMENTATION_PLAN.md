@@ -18,7 +18,12 @@ accuracy, millimeter accuracy, throughput, or factory deployment readiness.
 
 ## Delivery checkpoint
 
-Implementation steps 1–6 are present. Software validation currently covers 33
+Implementation steps 1–6 are present. Software validation currently covers 46
 passing automated checks, production HMI build, and local browser startup/settings.
 Step 8 remains an explicit operator acceptance gate: no camera/model/pallet capture
 was supplied. Remote deployment is pending a target and network access model.
+
+Teach Setup extension: four-corner datum, image-space search region, following
+material/roll regions, floor/material sampling controls, immutable recipes,
+frame-bound manual origin confirmation and taught-alignment verdict gating.
+See `teaching.md` for operation and explicit validation limits.

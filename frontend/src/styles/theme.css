@@ -1563,3 +1563,126 @@ h1 > span {
     scroll-behavior: auto !important;
   }
 }
+.teach-entry,
+.teach-library {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #f2f5f5;
+  border: 1px solid #dbe3e3;
+  margin-bottom: 16px;
+}
+.teach-entry strong {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  margin-right: 16px;
+}
+.teach-entry span {
+  color: #52656d;
+  font-size: 12px;
+}
+.teach-library {
+  justify-content: flex-start;
+}
+.teach-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 24px;
+  margin-top: 20px;
+}
+.teach-tools,
+.teach-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.teach-canvas {
+  position: relative;
+  background: #18262c;
+  border: 1px solid #35474f;
+  overflow: hidden;
+}
+.teach-canvas img,
+.teach-canvas svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+}
+.teach-canvas svg {
+  cursor: crosshair;
+  touch-action: none;
+}
+.teach-instruction {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #546872;
+  margin: 12px 0;
+}
+.teach-legend {
+  padding: 12px 0;
+  font-size: 11px;
+  color: #50636c;
+}
+.teach-legend span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.teach-legend i {
+  width: 10px;
+  height: 10px;
+  border: 1px solid #65747b;
+}
+.teach-settings {
+  padding-left: 22px;
+  border-left: 1px solid #dce4e7;
+}
+.teach-settings label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+  margin: 12px 0;
+}
+.teach-settings .ant-input-number {
+  width: 100%;
+}
+.teach-coordinates {
+  margin-top: 18px;
+  font-size: 12px;
+}
+.teach-coordinates summary {
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+.teach-coordinates > div {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 7px 0;
+}
+.teach-coordinates strong {
+  width: 32px;
+}
+.origin-prompt {
+  padding: 12px;
+  background: #fff7d6;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 12px;
+}
+@media (max-width: 800px) {
+  .teach-layout {
+    grid-template-columns: 1fr;
+  }
+  .teach-settings {
+    border-left: none;
+    padding-left: 0;
+  }
+}

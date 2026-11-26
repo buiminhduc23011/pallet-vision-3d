@@ -202,10 +202,38 @@ class RuntimeConfig(StrictModel):
     minimum_free_disk_mb: int = Field(default=1024, ge=100)
 
 
+class TeachingConfig(StrictModel):
+    source_frame_id: str = Field(min_length=1, max_length=128)
+    image_width: int = Field(gt=1)
+    image_height: int = Field(gt=1)
+    camera_serial: str | None = None
+    intrinsics: Intrinsics | None = None
+    target: ROI
+    material_roi: ROI | None = None
+    roll_roi: ROI | None = None
+    require_origin_confirmation: bool = True
+    size_tolerance_percent: float = Field(default=20, gt=0, le=100)
+
+    @model_validator(mode="after")
+    def validate_target(self):
+        p = self.target.points
+        if (
+            len(p) != 4
+            or sum(p[i][0] * p[(i + 1) % 4][1] - p[(i + 1) % 4][0] * p[i][1] for i in range(4)) <= 0
+        ):
+            raise ValueError("Teach four corners clockwise: origin, +X, opposite, +Y")
+        for i, a in enumerate(p):
+            b, c = p[(i + 1) % 4], p[(i + 2) % 4]
+            if (b[0] - a[0]) * (c[1] - b[1]) - (b[1] - a[1]) * (c[0] - b[0]) <= 1e-8:
+                raise ValueError("Four distinct, strictly convex corners are required")
+        return self
+
+
 class AppConfig(StrictModel):
     schema_version: Literal[1] = 1
     revision: int = Field(default=1, ge=1)
     roi: ROI = Field(default_factory=ROI)
+    teaching: TeachingConfig | None = None
     calibration: CalibrationConfig = Field(default_factory=CalibrationConfig)
     classifier: ClassifierConfig = Field(default_factory=ClassifierConfig)
     alignment: AlignmentConfig = Field(default_factory=AlignmentConfig)
